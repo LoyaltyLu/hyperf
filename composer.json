@@ -124,7 +124,8 @@
         "hyperf/validation": "self.version",
         "hyperf/view": "self.version",
         "hyperf/websocket-client": "self.version",
-        "hyperf/websocket-server": "self.version"
+        "hyperf/websocket-server": "self.version",
+        "hyperf/tcc-transaction": "self.version"
     },
     "suggest": {},
     "autoload": {
@@ -204,7 +205,8 @@
             "Hyperf\\Validation\\": "src/validation/src/",
             "Hyperf\\View\\": "src/view/src/",
             "Hyperf\\WebSocketClient\\": "src/websocket-client/src/",
-            "Hyperf\\WebSocketServer\\": "src/websocket-server/src/"
+            "Hyperf\\WebSocketServer\\": "src/websocket-server/src/",
+            "Hyperf\\TccTransaction\\": "src/tcc-transaction/src/"
         }
     },
     "autoload-dev": {
@@ -266,7 +268,8 @@
             "HyperfTest\\Utils\\": "src/utils/tests/",
             "HyperfTest\\Validation\\": "src/validation/tests/",
             "HyperfTest\\View\\": "src/view/tests/",
-            "HyperfTest\\WebSocketClient\\": "src/websocket-client/tests/"
+            "HyperfTest\\WebSocketClient\\": "src/websocket-client/tests/",
+            "HyperfTest\\TccTransaction\\": "src/tcc-transaction/tests/"
         }
     },
     "config": {
@@ -335,7 +338,8 @@
                 "Hyperf\\Validation\\ConfigProvider",
                 "Hyperf\\View\\ConfigProvider",
                 "Hyperf\\WebSocketClient\\ConfigProvider",
-                "Hyperf\\WebSocketServer\\ConfigProvider"
+                "Hyperf\\WebSocketServer\\ConfigProvider",
+                "Hyperf\\TccTransaction\\ConfigProvider"
             ]
         }
     },
