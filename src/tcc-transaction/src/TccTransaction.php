@@ -3,9 +3,7 @@
 
 namespace Hyperf\TccTransaction;
 
-
 use Hyperf\Di\Annotation\Inject;
-use Hyperf\RpcClient\Exception\RequestException;
 use Hyperf\TccTransaction\Exception\TccTransactionException;
 use Hyperf\Utils\ApplicationContext;
 use Hyperf\Utils\Exception\ParallelExecutionException;
@@ -82,7 +80,7 @@ class TccTransaction
                 if ($this->state->upTccStatus($tid, $tcc_method, 'retried_cancel_count')) {
                     return $this->send($proceedingJoinPoint, $servers, 'cancelMethod', $tid, $params); #tryMethod阶段失败直接回滚
                 }
-                return ['code' => 0, 'msg' => '事务提交失败'];
+                throw new  TccTransactionException('回滚异常');
             case 'confirmMethod':
                 if ($this->state->upTccStatus($tid, $tcc_method, 'retried_confirm_count')) {
                     return $this->send($proceedingJoinPoint, $servers, 'confirmMethod', $tid, $params);
