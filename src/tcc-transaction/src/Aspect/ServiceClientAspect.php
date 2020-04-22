@@ -53,8 +53,9 @@ class ServiceClientAspect extends AbstractAspect
             #如果是TCC事务注解,且子服务不为空，触发Tcc事务
             $tcc_method = array_search($result['function'], $servers->master);
             if ($tcc_method == 'tryMethod') {
-                $tid = $this->state->initStatus($servers, $proceedingJoinPoint->getArguments()[1][0]);#初始化事务状态
-                return $this->tccTransaction->send($proceedingJoinPoint, $servers, $tcc_method,$tid);
+                $params=$proceedingJoinPoint->getArguments()[1][0];
+                $tid = $this->state->initStatus($servers, $params);#初始化事务状态
+                return $this->tccTransaction->send($proceedingJoinPoint, $servers, $tcc_method,$tid,$params);
             }
 
         }

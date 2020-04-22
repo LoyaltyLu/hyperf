@@ -60,32 +60,12 @@ class State
         //(回滚处理)修改回滚次数,并且记录当前是哪个阶段出现了异常
         if ($flag == 1) {
             //判断当前事务重试的次数为几次,如果重试次数超过最大次数,则取消重试
-            if ($originalData['retried_cancel_count'] >= $originalData['retried_max_count']) {
-                $originalData['status'] = 'fail';
-                $this->redis->hSet('Tcc', $tid, json_encode($originalData));
-                return false;
-            }
-            $originalData['retried_cancel_count'] ++;
-            $originalData['tcc_method'] = $tcc_method;
-            $originalData['status'] = 'abnormal';
-            $originalData['last_update_time'] = time();
-            $this->redis->hSet('Tcc', $tid, json_encode($originalData));
-            return true;
+
         }
         //(confirm处理)修改尝试次数,并且记录当前是哪个阶段出现了异常
         if ($flag == 2) {
             //判断当前事务重试的次数为几次,如果重试次数超过最大次数,则取消重试
-            if ($originalData['retried_confirm_count'] >= 1) {
-                $originalData['status'] = 'fail';
-                $this->redis->hSet('Tcc', $tid, json_encode($originalData));
-                return false;
-            }
-            $originalData['retried_confirm_count'] ++;
-            $originalData['tcc_method'] = $tcc_method;
-            $originalData['status'] = 'abnormal';
-            $originalData['last_update_time'] = time();
-            $this->redis->hSet('Tcc', $tid, json_encode($originalData));
-            return true;
+
         }
         //修改当前事务的阶段
 //        if ($flag == 3) {
@@ -101,7 +81,7 @@ class State
      * @param $tid
      * @param $data
      */
-    public function updateTccStatus($tid, $tcc_method,$status)
+    public function upAllTccStatus($tid, $tcc_method, $status)
     {
         $originalData = $this->redis->hget("Tcc", $tid);
         $originalData = json_decode($originalData, true);
@@ -109,5 +89,30 @@ class State
         $originalData['status'] = $status;
         $originalData['last_update_time'] = time();
         $this->redis->hSet('Tcc', $tid, json_encode($originalData)); //主服务状态
+    }
+
+    /**
+     * 修改当前事务某个阶段重试次数
+     * @param $tid
+     * @param $tcc_method
+     * @param $key
+     * @return bool
+     */
+    public function upTccStatus($tid, $tcc_method,$key)
+    {
+        $originalData = $this->redis->hget("Tcc", $tid);
+        $originalData = json_decode($originalData, true);
+        if ($originalData[$key] >= self::RETRIED_MAX_COUNT) {
+            $originalData['status'] = 'fail';
+            $this->redis->hSet('Tcc', $tid, json_encode($originalData));
+            return false;
+        }
+        $originalData[$key] ++;
+        $originalData['tcc_method'] = $tcc_method;
+        $originalData['status'] = 'abnormal';
+        $originalData['last_update_time'] = time();
+        $this->redis->hSet('Tcc', $tid, json_encode($originalData));
+
+        return true;
     }
 }
