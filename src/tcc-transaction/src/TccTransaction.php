@@ -51,7 +51,8 @@ class TccTransaction
             });
         }
         try {
-            $results = $parallel->wait(); #TODO: 如果等待发起时本服务挂了，如何处理
+            $results = $parallel->wait();
+            #TODO: 如果等待发起时本服务挂了，如何处理
             $this->state->upAllTccStatus($tid, $tcc_method, 'success');
             if ($tcc_method == 'tryMethod') {
                 $results = $this->send($proceedingJoinPoint, $servers, 'confirmMethod', $tid, $params);
@@ -74,20 +75,26 @@ class TccTransaction
      */
     public function errorTransction($tcc_method, $proceedingJoinPoint, $servers, $tid, $params)
     {
-        if ($tcc_method == 'tryMethod') {
-            return $this->send($proceedingJoinPoint, $servers, 'cancelMethod', $tid, $params); #tryMethod阶段失败直接回滚
-        } elseif ($tcc_method == 'cancelMethod') { #尝试回滚
-            if ($this->state->upTccStatus($tid, $tcc_method, 'retried_cancel_count')) {
+        var_dump($tcc_method);
+        switch ($tcc_method) {
+            case 'tryMethod':
+                var_dump(111);
                 return $this->send($proceedingJoinPoint, $servers, 'cancelMethod', $tid, $params); #tryMethod阶段失败直接回滚
-            }
-            return ['出问题了'];
-        } else if ($tcc_method == 'confirmMethod') {
-            if ($this->state->upTccStatus($tid, $tcc_method, 'retried_confirm_count')) {
-                return $this->send($proceedingJoinPoint, $servers, 'confirmMethod', $tid, $params);
-            }
-            $params['cancel_confirm_flag'] = 1;
-            return $this->send($proceedingJoinPoint, $servers, 'cancelMethod', $tid, $params);
+            case 'cancelMethod':
+                var_dump(222);
+                if ($this->state->upTccStatus($tid, $tcc_method, 'retried_cancel_count')) {
+                    return $this->send($proceedingJoinPoint, $servers, 'cancelMethod', $tid, $params); #tryMethod阶段失败直接回滚
+                }
+                return ['出问题了'];
+            case 'confirmMethod':
+                var_dump(333);
+                if ($this->state->upTccStatus($tid, $tcc_method, 'retried_confirm_count')) {
+                    return $this->send($proceedingJoinPoint, $servers, 'confirmMethod', $tid, $params);
+                }
+                $params['cancel_confirm_flag'] = 1;
+                return $this->send($proceedingJoinPoint, $servers, 'cancelMethod', $tid, $params);
         }
+
     }
 
 }

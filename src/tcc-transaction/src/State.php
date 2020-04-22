@@ -46,37 +46,6 @@ class State
     }
 
     /**
-     * 事务状态处理器
-     * @param string $tid
-     * @param int $flag
-     * @param string $tcc_method
-     * @param array $data
-     * @return bool
-     */
-    public function tccStatus(string $tid, $flag = 1, $tcc_method = '', $data = [])
-    {
-        $originalData = $this->redis->hget("Tcc", $tid);
-        $originalData = json_decode($originalData, true);
-        //(回滚处理)修改回滚次数,并且记录当前是哪个阶段出现了异常
-        if ($flag == 1) {
-            //判断当前事务重试的次数为几次,如果重试次数超过最大次数,则取消重试
-
-        }
-        //(confirm处理)修改尝试次数,并且记录当前是哪个阶段出现了异常
-        if ($flag == 2) {
-            //判断当前事务重试的次数为几次,如果重试次数超过最大次数,则取消重试
-
-        }
-        //修改当前事务的阶段
-//        if ($flag == 3) {
-//            $originalData['tcc_method'] = $data['tcc_method'];
-//            $originalData['status'] = $data['status'];
-//            $originalData['last_update_time'] = time();
-//            $this->redis->hSet('Tcc', $tid, json_encode($originalData)); //主服务状态
-//        }
-    }
-
-    /**
      * 修改事务整体服务的状态
      * @param $tid
      * @param $data
@@ -98,7 +67,7 @@ class State
      * @param $key
      * @return bool
      */
-    public function upTccStatus($tid, $tcc_method,$key)
+    public function upTccStatus($tid, $tcc_method, $key)
     {
         $originalData = $this->redis->hget("Tcc", $tid);
         $originalData = json_decode($originalData, true);
