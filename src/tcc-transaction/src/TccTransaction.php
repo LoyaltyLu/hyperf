@@ -75,19 +75,15 @@ class TccTransaction
      */
     public function errorTransction($tcc_method, $proceedingJoinPoint, $servers, $tid, $params)
     {
-        var_dump($tcc_method);
         switch ($tcc_method) {
             case 'tryMethod':
-                var_dump(111);
                 return $this->send($proceedingJoinPoint, $servers, 'cancelMethod', $tid, $params); #tryMethod阶段失败直接回滚
             case 'cancelMethod':
-                var_dump(222);
                 if ($this->state->upTccStatus($tid, $tcc_method, 'retried_cancel_count')) {
                     return $this->send($proceedingJoinPoint, $servers, 'cancelMethod', $tid, $params); #tryMethod阶段失败直接回滚
                 }
-                return ['出问题了'];
+                return ['code' => 0, 'msg' => '事务提交失败'];
             case 'confirmMethod':
-                var_dump(333);
                 if ($this->state->upTccStatus($tid, $tcc_method, 'retried_confirm_count')) {
                     return $this->send($proceedingJoinPoint, $servers, 'confirmMethod', $tid, $params);
                 }
